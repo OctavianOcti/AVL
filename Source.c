@@ -1,113 +1,134 @@
-﻿/*Traversarea arborilor AVL – Se dă un arbore AVL care se populează cu elemente aleatorii.Să
-se afișeze elementele în urmă traversării arborelui în „pre - ordine”, „in - ordine”, „post - ordine”
-și pe „nivel”(level - order traversal).
-*/
+﻿#define _CRT_SECURE_NO_WARNINGS
 #include<stdio.h>
 #include<stdlib.h>
-#include<math.h>
+#include<stdbool.h>
+#include <time.h>
+#define NR 15
 
-typedef struct nod
+typedef struct nod {
+    int cheie;
+    struct nod* stanga;
+    struct nod* dreapta;
+    int inaltime;
+    int nr;
+} nod;
+
+int maxim(int a, int b)
 {
-    int cheie; //nodul de inserat
-    struct nod* stanga; //pointer spre fiu stanga
-    struct nod* dreapta; //pointer spre fiu dreapta
-    int inaltime; //inaltimea
-}nod;
-
-nod* radacina;
-int avl_echilibrat = 1, contor = 0, vector_sterg[20];
-
-nod* initializare(nod* radacina)
+    if (a > b) return a;
+    return b;
+}
+int height(nod* node)
 {
-    if (radacina != NULL)
-        free(radacina);
-    radacina = NULL;
-    return radacina;
+    if (node == NULL) return 0;
+    return node->inaltime;
 }
 
-int maxim(int x, int y)
+nod* initializare(int cheie)
 {
-    if (x > y)
-        return x;
+    nod* node = (nod*)malloc(sizeof(nod));
+    node->cheie = cheie;
+    node->stanga = NULL;
+    node->dreapta = NULL;
+    node->inaltime = 1;
+    node->nr = 1;
+    return node;
+
+}
+
+nod* rightRotate(nod* b)
+{
+    nod* a = b->stanga;
+    nod* aux = a->dreapta;
+    //rotatie
+    a->dreapta = b;
+    b->stanga = aux;
+    //actualizam inaltimile
+    b->inaltime = maxim(height(b->stanga), height(b->dreapta)) + 1;
+    a->inaltime = maxim(height(a->stanga), height(a->dreapta)) + 1;
+    return a;
+}
+
+nod* leftRotate(nod* b)
+{
+    struct nod* y = b->dreapta;
+    struct nod* aux = y->stanga;
+
+    // rotatie
+    y->stanga = b;
+    b->dreapta = aux;
+
+    //actualizam inaltimile
+    b->inaltime = maxim(height(b->stanga), height(b->dreapta)) + 1;
+    y->inaltime = maxim(height(y->stanga), height(y->dreapta)) + 1;
+
     return y;
-}
 
-int inalt(nod* n) //inaltime
+}
+int getBalance(nod* node)
 {
-    if (n != NULL)
-    {
-        int inaltime_stanga = inalt(n->stanga);
-        int inaltime_dreapta = inalt(n->dreapta);
-        return(1 + maxim(inaltime_stanga, inaltime_dreapta));
-    }
-    return -1;
+    if (node == NULL)
+        return 0;
+    return height(node->stanga) - height(node->dreapta);
 }
-
-
-
-nod* inserare(nod* n, int ch)
+nod* insert(nod* node, int key)
 {
-    if (n == NULL)
+    int balance;
+    /* 1.  Perform the normal BST insertion */
+    if (node == NULL)
+        return(initializare(key));
+    if (key == node->cheie)
     {
-        nod* nd;
-        nd = (nod*)malloc(sizeof(nod));
-        if (nd == NULL)
-        {
-            printf("Eroare la alocarea noului nod\n");
-            exit(EXIT_FAILURE);
-        }
-        nd->cheie = ch;
-        nd->dreapta = NULL;
-        nd->stanga = NULL;
-        nd->inaltime = 1;
-        return nd;
+        (node->nr)++;
+        return node;
     }
-    if (n != NULL)
-    {
-        if (ch < n->cheie) //cheia=radacina < cheia nodului 
-            n->stanga = inserare(n->stanga, ch); //nodul se insereaza in stanga
-        else
-        {
-            if (ch > n->cheie) //radacina > cheia nodului
-                n->dreapta = inserare(n->dreapta, ch); //nodul este inserat in dreapta
-            else
-                return n;
-        }
-    }
-    if (n != NULL && n->stanga != NULL && n->dreapta != NULL) //daca exista elemente atat in stanga cat si in dreapta nodului 
-        n->inaltime = maxim(n->stanga->inaltime, n->dreapta->inaltime) + 1; //intaltimea= maximul dintre inaltimile din ambele parti +1 (nodul)
-    else
-    {
-        if (n != NULL && n->stanga == NULL && n->dreapta != NULL) //daca avem noduri doar in partea dreapta
-            n->inaltime = maxim(0, n->dreapta->inaltime) + 1; //inaltimea= inaltimea din dreapta +1
-        else
-        {
-            if (n != NULL && n->stanga != NULL && n->dreapta == NULL) //noduri doar in partea stanga
-                n->inaltime = maxim(n->stanga->inaltime, 0) + 1; //inaltimea= inaltimea din stanga +1
-            else
-            {
-                if (n != NULL && n->stanga == NULL && n->dreapta == NULL)
-                    n->inaltime = 1; //daca nu sunt noduri nici in stanga nici in dreapta => inaltimea=1 (nodul)
 
-            }
-        }
+    if (key < node->cheie)
+        node->stanga = insert(node->stanga, key);
+    else if (key > node->cheie)
+        node->dreapta = insert(node->dreapta, key);
+    
 
+    /* 2. Update height of this ancestor node */
+    node->inaltime = maxim(height(node->stanga), height(node->dreapta)) + 1;
+
+    /* 3. Get the balance factor of this ancestor
+          node to check whether this node became
+          unbalanced */
+    balance = getBalance(node);
+
+    // If this node becomes unbalanced, then
+    if (balance > 1 && key < node->stanga->cheie)
+        return rightRotate(node);
+
+    // Right Right Case
+    if (balance < -1 && key > node->dreapta->cheie)
+        return leftRotate(node);
+
+    // Left Right Case
+    if (balance > 1 && key > node->stanga->cheie)
+    {
+        node->stanga = leftRotate(node->stanga);
+        return rightRotate(node);
     }
-    return n; //intoarcem datele nodului 
+
+    // Right Left Case
+    if (balance < -1 && key < node->dreapta->cheie)
+    {
+        node->dreapta = rightRotate(node->dreapta);
+        return leftRotate(node);
+    }
+
+
+    return node;
 }
-
 void inordine(nod* radacina)
 {
     if (radacina != NULL)
     {
-        inordine(radacina->stanga); //stanga
-        if (radacina->cheie % 2 != 0) //verificam daca numarul este impar
-        {
-            vector_sterg[contor] = radacina->cheie; //retinem valorile in vector pentru a fi sterse ulterior
-            contor++;
-        }
-        printf("%d ", radacina->cheie);
-        inordine(radacina->dreapta); //dreapta
+        inordine(radacina->stanga);
+        printf("%d(%d) ", radacina->cheie,radacina->nr);
+        inordine(radacina->dreapta);
     }
 }
 
@@ -115,9 +136,9 @@ void preordine(nod* radacina)
 {
     if (radacina != NULL)
     {
-        printf("%d ", radacina->cheie); //radacina
-        preordine(radacina->stanga); //stanga
-        preordine(radacina->dreapta); //dreapta
+        printf("%d(%d) ", radacina->cheie, radacina->nr);
+        preordine(radacina->stanga);
+        preordine(radacina->dreapta);
     }
 }
 void postordine(nod* radacina)
@@ -126,34 +147,97 @@ void postordine(nod* radacina)
     {
         postordine(radacina->stanga);
         postordine(radacina->dreapta);
-        printf("%d ", radacina->cheie);
+        printf("%d(%d) ", radacina->cheie, radacina->nr);
 
     }
 
 }
+bool printLevel(nod* radacina, int level)
+{
+    if (radacina == NULL) return false;
+    if (level == 1)
+    {
+        printf("%d(%d) ", radacina->cheie, radacina->nr);
+        return true;
+    }
+    bool left = printLevel(radacina->stanga, level - 1);
+    bool right = printLevel(radacina->dreapta, level - 1);
+    return left || right;
+}
+void levelOrderTraversal(nod* radacina)
+{
+    int level = 1;
+    while (printLevel(radacina, level))
+        level++;
+}
+
+
+
+void meniu()
+{
+    printf("\n1.Parcurgere in preordine \n");
+    printf("2.Parcurgere in inordine \n");
+    printf("3.Parcurgere in postordine \n");
+    printf("4.Parcurgerea pe nivele \n");
+    printf("0.Iesire \n");
+    printf("Selectati o optiune: ");
+}
+
+    
+
+
+
 
 int main()
 {
-    radacina = initializare(radacina);
-    radacina = inserare(radacina, 12);
-    radacina = inserare(radacina, -7);
-    radacina = inserare(radacina, 45);
-    radacina = inserare(radacina, 32);
-    radacina = inserare(radacina, 2);
-    radacina = inserare(radacina, 22);
-    radacina = inserare(radacina, 1);
-    radacina = inserare(radacina, 2);
-    radacina = inserare(radacina, 3);
-    radacina = inserare(radacina, 4);
-    radacina = inserare(radacina, 90);
-    radacina = inserare(radacina, 89);
-    radacina = inserare(radacina, 225);
-    radacina = inserare(radacina, 0);
-    printf("Parcurgerea in preordine: "); 
-    preordine(radacina);
-    printf("\nParcurgerea in inordine: ");
-    inordine(radacina);
-    printf("\nParcurgerea in postordine: ");
-   postordine(radacina);
+    int opt, v[NR], i;
+    struct nod* radacina = NULL;
+    radacina = insert(radacina, 12);
+    radacina = insert(radacina, -7);
+    radacina = insert(radacina, 45);
+    radacina = insert(radacina, 32);
+    radacina = insert(radacina, 2);
+    radacina = insert(radacina, 22);
+    radacina = insert(radacina, 1);
+    radacina = insert(radacina, 2);
+    radacina = insert(radacina, 3);
+    radacina = insert(radacina, 4);
+    radacina = insert(radacina, 90);
+    radacina = insert(radacina, 89);
+    radacina = insert(radacina, 225);
+    radacina = insert(radacina, 0);
+    
+        do {
+            meniu();
+            scanf("%d", &opt);
+            switch (opt)
+            {
+            case 0:break;
+            case 1: printf("Afisare preordine:\n");
+                preordine(radacina);
+                break;
+            case 2:printf("Afisare inordine:\n");
+                inordine(radacina);
+                break;
+            case 3:printf("Afisare postordine:\n");
+                postordine(radacina);
+                break;
+            case 4:printf("Afisare pe nivele\n");
+                levelOrderTraversal(radacina);
+                break;
+            default:printf("Introduceti o optiune valida!\n");
+                break;
+            }
+            
+
+        } while (opt != 0);
+    
+    
+
+
+
     return 0;
 }
+
+
+
