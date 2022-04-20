@@ -3,7 +3,7 @@
 #include<stdlib.h>
 #include<stdbool.h>
 #include <time.h>
-#define NR 15
+#define NR 10
 
 typedef struct nod {
     int cheie;
@@ -74,7 +74,7 @@ int getBalance(nod* node)
 nod* insert(nod* node, int key)
 {
     int balance;
-    /* 1.  Perform the normal BST insertion */
+
     if (node == NULL)
         return(initializare(key));
     if (key == node->cheie)
@@ -89,30 +89,28 @@ nod* insert(nod* node, int key)
         node->dreapta = insert(node->dreapta, key);
     
 
-    /* 2. Update height of this ancestor node */
+
     node->inaltime = maxim(height(node->stanga), height(node->dreapta)) + 1;
 
-    /* 3. Get the balance factor of this ancestor
-          node to check whether this node became
-          unbalanced */
+   
     balance = getBalance(node);
 
-    // If this node becomes unbalanced, then
+    
     if (balance > 1 && key < node->stanga->cheie)
         return rightRotate(node);
 
-    // Right Right Case
+   
     if (balance < -1 && key > node->dreapta->cheie)
         return leftRotate(node);
 
-    // Left Right Case
+    
     if (balance > 1 && key > node->stanga->cheie)
     {
         node->stanga = leftRotate(node->stanga);
         return rightRotate(node);
     }
 
-    // Right Left Case
+
     if (balance < -1 && key < node->dreapta->cheie)
     {
         node->dreapta = rightRotate(node->dreapta);
@@ -170,6 +168,13 @@ void levelOrderTraversal(nod* radacina)
     while (printLevel(radacina, level))
         level++;
 }
+int Random(int lower, int upper)
+{
+        int num = (rand() %(upper - lower + 1)) + lower;
+        return num;
+    
+}
+
 
 
 
@@ -190,23 +195,14 @@ void meniu()
 
 int main()
 {
-    int opt, v[NR], i;
+    int opt, x, i;
     struct nod* radacina = NULL;
-    radacina = insert(radacina, 12);
-    radacina = insert(radacina, -7);
-    radacina = insert(radacina, 45);
-    radacina = insert(radacina, 32);
-    radacina = insert(radacina, 2);
-    radacina = insert(radacina, 22);
-    radacina = insert(radacina, 1);
-    radacina = insert(radacina, 2);
-    radacina = insert(radacina, 3);
-    radacina = insert(radacina, 4);
-    radacina = insert(radacina, 90);
-    radacina = insert(radacina, 89);
-    radacina = insert(radacina, 225);
-    radacina = insert(radacina, 0);
-    
+    for (i = 0; i < NR; i++) {
+        x = Random(-2, 6);
+        printf("%d ",x);
+        radacina = insert(radacina, x);
+    }
+
         do {
             meniu();
             scanf("%d", &opt);
