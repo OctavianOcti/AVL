@@ -6,8 +6,10 @@ mult o unitate”.
 
 Def1: Se numeste inaltime a unui arbore ca fiind lungimea celui mai lung drum de la
 nodul radacina la unul din nodurile terminale.
+
 Def2: Se numeste factor de echilibrare diferenta dintre inaltimea subarborelui drept si
 inaltimea subarborelui stang.
+
 Def3: Atasand fiecarui nod un camp care reprezinta factorul de echilibrare al sau, se
 spune ca arborele binar este echilibrat cand toti factorii de echilibrare ai nodurilor sunt
 -1,0,+1.
