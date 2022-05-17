@@ -172,7 +172,7 @@ void levelOrderTraversal(nod* radacina)
 void Random() {
 
     int i;
-    time_t t1; // declare time variable  
+    time_t t1; 
     srand((unsigned)time(&t1));
     for (i = 0; i < NR; i++)
     {
