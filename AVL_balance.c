@@ -5,7 +5,7 @@
 #include <time.h>
 #define NR 10
 
-// An AVL tree node 
+
 struct Node
 {
     int key;
@@ -18,7 +18,7 @@ struct Node* p;
 int v[NR];
 
 
-// A utility function to get the height of the tree 
+
 int height(struct Node* node)
 {
     int st = 0, dr = 0;
@@ -84,14 +84,13 @@ struct Node* d_rot_left(struct Node* node)
     return node;
 }
 
-// A utility function to get maximimum of two integers 
+
 int maxim(int a, int b)
 {
     return (a > b) ? a : b;
 }
 
-/* Helper function that allocates a new node with the given key and
-    NULL left and right pointers. */
+
 struct Node* newNode(int key)
 {
     struct Node* node = (struct Node*)malloc(sizeof(struct Node));
@@ -211,7 +210,7 @@ struct Node* Tata(struct Node* root, struct Node* node)
     {
         if (root->left && root->left == node) p = root;
         if (root->right && root->right == node) p = root;
-        // if (root->left->key == key|| root->right->key == key) p = root;
+        
         Tata(root->left, node);
         Tata(root->right, node);
     }
@@ -300,7 +299,7 @@ void levelOrderTraversal( struct Node* root)
 void Random() {
 
     int i;
-    time_t t1; // declare time variable  
+    time_t t1; 
     srand((unsigned)time(&t1));
     for (i = 0; i < NR; i++)
     {
