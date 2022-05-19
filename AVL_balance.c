@@ -5,7 +5,7 @@
 #include <time.h>
 #define NR 10
 
-
+ 
 struct Node
 {
     int key;
@@ -84,7 +84,6 @@ struct Node* d_rot_left(struct Node* node)
     return node;
 }
 
-
 int maxim(int a, int b)
 {
     return (a > b) ? a : b;
@@ -110,22 +109,7 @@ int cheie(struct Node* root, struct Node* node)
     return -1;//daca nu a gasit nodul cautat
 
 }
-//returneaza un pointer catre primul fiu
-struct Node* PrimulFiu(struct Node* root, struct Node* node)
-{
 
-    if (root != NULL)
-    {
-        if (root == node)
-            if (root->left && root->right == NULL) p = root->left;
-            else
-                if (root->right && root->left == NULL) p = root->right;
-        PrimulFiu(root->left, node);
-        PrimulFiu(root->right, node);
-    }
-    return p;
-
-}
 //returneaza un pointer catre radacina
 struct Node* Radacina(struct Node* root)
 {
@@ -134,20 +118,7 @@ struct Node* Radacina(struct Node* root)
     return root;
 }
 
-//returneaza un pointer catre fratele dreapta al unui nod
-struct Node* FrateDreapta(struct Node* root, struct Node* node)
-{
-    if (root != NULL)
-    {
-        if (root->left && root->left == node) {
-            p = root->right;
-            return p;
-        }
-        FrateDreapta(root->left, node);
-        FrateDreapta(root->right, node);
-    }
-    return p;
-}
+
 // insereaza un nod
 struct Node* insert(struct Node* node, int key)
 {
@@ -162,7 +133,7 @@ struct Node* insert(struct Node* node, int key)
                     node = s_rot_left(node);
                 else node = d_rot_left(node);
         }
-        else if(key<node->key)
+        else if (key < node->key)
         {
             node->left = insert(node->left, key);
             if (factor(node) == 2)
@@ -177,9 +148,9 @@ struct Node* insert(struct Node* node, int key)
             (node->nr)++;
 
         }
-      
 
-       
+
+
 
         node->balance = height(node);
         return node;
@@ -187,67 +158,9 @@ struct Node* insert(struct Node* node, int key)
 
 }
 
-//returneaza un pointer catre un nod dat prin cheie
-struct Node* nod(struct Node* root, int key)
-{
-    if (root != NULL)
-    {
-        if (root->key == key) {
-            p = root;
-            // return p;
-        }
-        nod(root->left, key);
-        nod(root->right, key);
-
-    }
-    return p;
-}
-//returneaza un pointer catre tata unui nod
-struct Node* Tata(struct Node* root, struct Node* node)
-{
-    if (node == root) return NULL;
-    if (root)
-    {
-        if (root->left && root->left == node) p = root;
-        if (root->right && root->right == node) p = root;
-        
-        Tata(root->left, node);
-        Tata(root->right, node);
-    }
-    return p;
-}
-struct node* suprima(struct Node* node, struct Node* root)
-{
-
-    struct Node* q;
-    if (node != NULL && root != NULL)
-    {
-
-        suprima(node->left, root);
-        suprima(node->right, root);
-        if (node != root)
-        {
-            q = Tata(root, node);
-            if (q->left && q->left == node)
-                q->left = NULL;
-            if (q->right && q->right == node)
-                q->right = NULL;
-        }
 
 
-        if (root != node)free(node);
-        else {
-            root->left = root->right = NULL;
-            free(root);
-            root = NULL;
 
-
-        }
-
-    }
-    return root;
-
-}
 void preOrder(struct Node* root)
 {
     if (root != NULL)
@@ -265,7 +178,7 @@ void inOrder(struct Node* root)
     if (root != NULL)
     {
         inOrder(root->left);
-        printf("%d(%d) ", root->key,root->nr);
+        printf("%d(%d) ", root->key, root->nr);
         inOrder(root->right);
     }
 }
@@ -290,7 +203,7 @@ bool printLevel(struct Node* root, int level)
     bool right = printLevel(root->right, level - 1);
     return left || right;
 }
-void levelOrderTraversal( struct Node* root)
+void levelOrderTraversal(struct Node* root)
 {
     int level = 1;
     while (printLevel(root, level))
@@ -303,9 +216,9 @@ void Random() {
     srand((unsigned)time(&t1));
     for (i = 0; i < NR; i++)
     {
-        v[i] = rand() % 10;
+        v[i] = rand() % 15;
         printf("%d ", v[i]);
-  
+
     }
     printf("\n");
 }
@@ -338,19 +251,19 @@ int main()
         switch (opt)
         {
         case 0:break;
-        case 1: printf("Afisare preordine:\n");
-           preOrder(radacina);
+        case 1: printf("\nAfisare preordine:\n");
+            preOrder(radacina);
             break;
-        case 2:printf("Afisare inordine:\n");
+        case 2:printf("\nAfisare inordine:\n");
             inOrder(radacina);
             break;
-        case 3:printf("Afisare postordine:\n");
+        case 3:printf("\nAfisare postordine:\n");
             postOrder(radacina);
             break;
-        case 4:printf("Afisare pe nivele\n");
+        case 4:printf("\nAfisare pe nivele\n");
             levelOrderTraversal(radacina);
             break;
-        default:printf("Introduceti o optiune valida!\n");
+        default:printf("\nIntroduceti o optiune valida!\n");
             break;
         }
 
